@@ -84,3 +84,5 @@ Use `docs/screenshots/` to store demo screenshots.
 - CSV/PDF export
 - Tenant/contact management
 - Audit trail and activity history
+
+_Deployment trigger note updated on 2026-02-18._
