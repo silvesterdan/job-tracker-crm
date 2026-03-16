@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createPaintRecordAction } from "@/app/actions";
+import { JobDescriptionForm } from "@/components/job-description-form";
 import { MarkdownContent } from "@/components/markdown-content";
 import { prisma } from "@/lib/prisma";
 
@@ -36,11 +37,15 @@ export default async function JobPage({ params }: JobPageProps) {
       <p className="text-sm text-zinc-600">
         {job.property.addressLine}, {job.property.city} | {job.jobDate.toLocaleDateString()}
       </p>
-      {job.description && (
-        <div className="mt-3 text-sm text-zinc-800">
-          <MarkdownContent>{job.description}</MarkdownContent>
-        </div>
-      )}
+      <section className="mt-6 rounded-lg border border-zinc-200 p-5">
+        <h2 className="text-xl font-semibold">Description</h2>
+        {job.description && (
+          <div className="mt-2 text-sm text-zinc-800">
+            <MarkdownContent>{job.description}</MarkdownContent>
+          </div>
+        )}
+        <JobDescriptionForm jobId={job.id} defaultValue={job.description ?? ""} />
+      </section>
 
       <section className="mt-8 rounded-lg border border-zinc-200 p-5">
         <h2 className="text-xl font-semibold">Add Paint Record</h2>

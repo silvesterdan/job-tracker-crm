@@ -106,6 +106,18 @@ export async function updateAccessNotesAction(formData: FormData): Promise<void>
   revalidatePath(`/properties/${propertyId}`);
 }
 
+export async function updateJobDescriptionAction(formData: FormData): Promise<void> {
+  const jobId = requiredString(formData.get("jobId"));
+  const description = optionalString(formData.get("description"));
+
+  await prisma.job.update({
+    where: { id: jobId },
+    data: { description },
+  });
+
+  revalidatePath(`/jobs/${jobId}`);
+}
+
 export async function createJobAction(formData: FormData): Promise<void> {
   const propertyId = requiredString(formData.get("propertyId"));
 

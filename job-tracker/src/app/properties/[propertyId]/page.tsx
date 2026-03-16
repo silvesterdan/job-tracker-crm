@@ -25,6 +25,8 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
 
   const latestPaintByRoom = await prisma.$queryRaw<
     Array<{
+      recordId: string;
+      jobId: string;
       room: string;
       colour: string | null;
       brand: string | null;
@@ -34,6 +36,8 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
     }>
   >`
     SELECT DISTINCT ON (pr."area")
+      pr."id" AS "recordId",
+      j."id" AS "jobId",
       pr."area" AS "room",
       COALESCE(pr."colourName", pr."colourCode") AS "colour",
       pr."brand" AS "brand",
@@ -83,7 +87,12 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
         <ul className="mt-3 grid gap-3">
           {latestPaintByRoom.map((record) => (
             <li key={record.room} className="rounded border border-zinc-200 p-4">
-              <p className="font-medium">{record.room}</p>
+              <div className="flex items-start justify-between gap-2">
+                <p className="font-medium">{record.room}</p>
+                <Link href={`/jobs/${record.jobId}/paint-records/${record.recordId}/edit`} className="shrink-0 text-sm underline">
+                  Edit
+                </Link>
+              </div>
               <p className="text-sm text-zinc-700">Colour: {record.colour ?? "-"}</p>
               <p className="text-sm text-zinc-600">
                 {[record.brand, record.finish].filter(Boolean).join(" | ") || "Brand/finish not set"}
