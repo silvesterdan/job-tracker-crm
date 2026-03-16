@@ -40,12 +40,13 @@ type PaintRecordDraft = {
   brand: string | null;
   finish: string | null;
   colour: string | null;
+  shopName: string | null;
   notes: string | null;
 };
 
 function parsePaintRecordDrafts(formData: FormData): PaintRecordDraft[] {
   const grouped = new Map<number, PaintRecordDraft>();
-  const fieldPattern = /^paintRecords\.(\d+)\.(room|brand|finish|colour|notes)$/;
+  const fieldPattern = /^paintRecords\.(\d+)\.(room|brand|finish|colour|shopName|notes)$/;
 
   for (const [key, value] of formData.entries()) {
     if (typeof value !== "string") {
@@ -59,7 +60,7 @@ function parsePaintRecordDrafts(formData: FormData): PaintRecordDraft[] {
 
     const index = Number.parseInt(match[1], 10);
     const field = match[2] as keyof PaintRecordDraft;
-    const current = grouped.get(index) ?? { room: null, brand: null, finish: null, colour: null, notes: null };
+    const current = grouped.get(index) ?? { room: null, brand: null, finish: null, colour: null, shopName: null, notes: null };
     current[field] = optionalString(value);
     grouped.set(index, current);
   }
@@ -150,12 +151,13 @@ export async function createJobWithPaintRecordsAction(formData: FormData): Promi
     brand: string | null;
     finish: string | null;
     colourName: string;
+    shopName: string | null;
     notes: string | null;
   }> = [];
 
   for (let index = 0; index < paintDrafts.length; index += 1) {
     const draft = paintDrafts[index];
-    const hasAnyField = [draft.room, draft.brand, draft.finish, draft.colour, draft.notes].some(Boolean);
+    const hasAnyField = [draft.room, draft.brand, draft.finish, draft.colour, draft.shopName, draft.notes].some(Boolean);
 
     if (!hasAnyField) {
       continue;
@@ -173,6 +175,7 @@ export async function createJobWithPaintRecordsAction(formData: FormData): Promi
       brand: draft.brand,
       finish: draft.finish,
       colourName: draft.colour,
+      shopName: draft.shopName,
       notes: draft.notes,
     });
   }
@@ -227,6 +230,41 @@ export async function createPaintRecordAction(formData: FormData): Promise<void>
       colourName: optionalString(formData.get("colourName")),
       colourCode: optionalString(formData.get("colourCode")),
       finish: optionalString(formData.get("finish")),
+      shopName: optionalString(formData.get("shopName")),
+      notes: optionalString(formData.get("notes")),
+      photoPath,
+    },
+  });
+
+  revalidatePath(`/jobs/${jobId}`);
+  redirect(`/jobs/${jobId}`);
+}
+
+export async function updatePaintRecordAction(formData: FormData): Promise<void> {
+  const recordId = requiredString(formData.get("recordId"));
+  const jobId = requiredString(formData.get("jobId"));
+  const existingPhotoPath = optionalString(formData.get("existingPhotoPath"));
+  const photo = formData.get("photo");
+  let photoPath: string | null = existingPhotoPath;
+
+  if (photo instanceof File && photo.size > 0) {
+    if (!photo.type.startsWith("image/")) {
+      throw new Error("Photo must be an image.");
+    }
+
+    photoPath = await savePaintPhoto(photo);
+  }
+
+  await prisma.paintRecord.update({
+    where: { id: recordId },
+    data: {
+      area: requiredString(formData.get("area")),
+      brand: optionalString(formData.get("brand")),
+      productName: optionalString(formData.get("productName")),
+      colourName: optionalString(formData.get("colourName")),
+      colourCode: optionalString(formData.get("colourCode")),
+      finish: optionalString(formData.get("finish")),
+      shopName: optionalString(formData.get("shopName")),
       notes: optionalString(formData.get("notes")),
       photoPath,
     },

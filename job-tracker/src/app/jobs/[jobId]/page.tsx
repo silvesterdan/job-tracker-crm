@@ -2,6 +2,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createPaintRecordAction } from "@/app/actions";
+import { MarkdownContent } from "@/components/markdown-content";
 import { prisma } from "@/lib/prisma";
 
 type JobPageProps = {
@@ -35,7 +36,11 @@ export default async function JobPage({ params }: JobPageProps) {
       <p className="text-sm text-zinc-600">
         {job.property.addressLine}, {job.property.city} | {job.jobDate.toLocaleDateString()}
       </p>
-      {job.description && <p className="mt-3">{job.description}</p>}
+      {job.description && (
+        <div className="mt-3 text-sm text-zinc-800">
+          <MarkdownContent>{job.description}</MarkdownContent>
+        </div>
+      )}
 
       <section className="mt-8 rounded-lg border border-zinc-200 p-5">
         <h2 className="text-xl font-semibold">Add Paint Record</h2>
@@ -48,6 +53,7 @@ export default async function JobPage({ params }: JobPageProps) {
           <input name="colourName" placeholder="Colour name (optional)" className="rounded border p-2" />
           <input name="colourCode" placeholder="Colour code (optional)" className="rounded border p-2" />
           <input name="finish" placeholder="Finish (optional)" className="rounded border p-2" />
+          <input name="shopName" placeholder="Shop name / address (optional)" className="rounded border p-2 md:col-span-2" />
           <input name="photo" type="file" accept="image/*" className="rounded border p-2 md:col-span-2" />
           <textarea name="notes" placeholder="Notes (optional)" className="rounded border p-2 md:col-span-2" />
           <button type="submit" className="w-fit rounded bg-black px-4 py-2 text-white">
@@ -61,12 +67,23 @@ export default async function JobPage({ params }: JobPageProps) {
         <ul className="mt-3 grid gap-4">
           {job.paintRecords.map((record) => (
             <li key={record.id} className="rounded border border-zinc-200 p-4">
-              <p className="font-medium">{record.area}</p>
+              <div className="flex items-start justify-between gap-2">
+                <p className="font-medium">{record.area}</p>
+                <Link
+                  href={`/jobs/${job.id}/paint-records/${record.id}/edit`}
+                  className="shrink-0 text-sm underline"
+                >
+                  Edit
+                </Link>
+              </div>
               <p className="text-sm text-zinc-600">
                 {[record.brand, record.productName, record.colourName, record.colourCode, record.finish]
                   .filter(Boolean)
                   .join(" | ") || "No paint details provided"}
               </p>
+              {record.shopName && (
+                <p className="mt-1 text-sm text-zinc-500">Shop: {record.shopName}</p>
+              )}
               {record.notes && <p className="mt-2 text-sm">{record.notes}</p>}
               {record.photoPath && (
                 <div className="mt-3">

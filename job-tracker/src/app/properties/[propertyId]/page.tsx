@@ -29,6 +29,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
       colour: string | null;
       brand: string | null;
       finish: string | null;
+      shopName: string | null;
       jobDate: Date;
     }>
   >`
@@ -37,6 +38,7 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
       COALESCE(pr."colourName", pr."colourCode") AS "colour",
       pr."brand" AS "brand",
       pr."finish" AS "finish",
+      pr."shopName" AS "shopName",
       j."jobDate" AS "jobDate"
     FROM "PaintRecord" pr
     INNER JOIN "Job" j ON j."id" = pr."jobId"
@@ -86,6 +88,9 @@ export default async function PropertyPage({ params }: PropertyPageProps) {
               <p className="text-sm text-zinc-600">
                 {[record.brand, record.finish].filter(Boolean).join(" | ") || "Brand/finish not set"}
               </p>
+              {record.shopName && (
+                <p className="text-sm text-zinc-500">Shop: {record.shopName}</p>
+              )}
               <p className="mt-1 text-xs text-zinc-500">From job date: {record.jobDate.toLocaleDateString()}</p>
             </li>
           ))}

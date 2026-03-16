@@ -2,6 +2,7 @@
 
 import { useState } from "react";
 import { createJobWithPaintRecordsAction } from "@/app/actions";
+import { MarkdownEditor } from "@/components/markdown-editor";
 
 type JobFormProps = {
   propertyId: string;
@@ -38,10 +39,10 @@ export function JobForm({ propertyId }: JobFormProps) {
         <input name="summary" required className="rounded border p-2" />
       </label>
 
-      <label className="grid gap-1 text-sm">
+      <div className="grid gap-1 text-sm">
         <span>Notes</span>
-        <textarea name="notes" className="min-h-24 rounded border p-2" />
-      </label>
+        <MarkdownEditor name="notes" placeholder="Job notes... (supports **bold**, *italic*, - bullets)" />
+      </div>
 
       <section className="rounded border border-zinc-200 p-4">
         <div className="flex items-center justify-between gap-3">
@@ -91,6 +92,11 @@ export function JobForm({ propertyId }: JobFormProps) {
                 <label className="grid gap-1 text-sm">
                   <span>Finish</span>
                   <input name={`paintRecords.${recordId}.finish`} className="rounded border p-2" />
+                </label>
+
+                <label className="grid gap-1 text-sm md:col-span-2">
+                  <span>Shop name / address</span>
+                  <input name={`paintRecords.${recordId}.shopName`} className="rounded border p-2" />
                 </label>
 
                 <label className="grid gap-1 text-sm md:col-span-2">

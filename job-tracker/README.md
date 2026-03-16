@@ -86,3 +86,16 @@ Use `docs/screenshots/` to store demo screenshots.
 - Audit trail and activity history
 
 _Deployment trigger note updated on 2026-02-18._
+
+## Deployment Notes (2026-02-18)
+- Supabase + Vercel setup uses both env vars:
+  - `DATABASE_URL` = pooled connection (runtime)
+  - `DIRECT_URL` = direct connection (Prisma migrations)
+- Prisma schema datasource includes both:
+  - `url = env("DATABASE_URL")`
+  - `directUrl = env("DIRECT_URL")`
+- `prisma.config.ts` also includes both datasource values so `migrate deploy` can use direct URL.
+- Fixed Vercel runtime Prisma engine error by switching to standard Prisma client:
+  - `prisma/schema.prisma` generator set to `provider = "prisma-client-js"`
+  - `src/lib/prisma.ts` imports `PrismaClient` from `@prisma/client`
+- Demo/sample data is not auto-shared from local DB to Supabase; seed must be run against Supabase or inserted via SQL Editor.

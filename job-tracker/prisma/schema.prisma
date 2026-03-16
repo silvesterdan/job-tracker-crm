@@ -48,6 +48,7 @@ model PaintRecord {
   colourName  String?
   colourCode  String?
   finish      String?
+  shopName    String?
   notes       String?
   photoPath   String?
   createdAt   DateTime @default(now())
