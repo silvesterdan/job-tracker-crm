@@ -3,7 +3,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { createPaintRecordAction } from "@/app/actions";
 import { JobDescriptionForm } from "@/components/job-description-form";
-import { MarkdownContent } from "@/components/markdown-content";
 import { prisma } from "@/lib/prisma";
 
 type JobPageProps = {
@@ -39,11 +38,6 @@ export default async function JobPage({ params }: JobPageProps) {
       </p>
       <section className="mt-6 rounded-lg border border-zinc-200 p-5">
         <h2 className="text-xl font-semibold">Description</h2>
-        {job.description && (
-          <div className="mt-2 text-sm text-zinc-800">
-            <MarkdownContent>{job.description}</MarkdownContent>
-          </div>
-        )}
         <JobDescriptionForm jobId={job.id} defaultValue={job.description ?? ""} />
       </section>
 
